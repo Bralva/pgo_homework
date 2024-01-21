@@ -52,6 +52,7 @@
         with_items:
           - pg_stat_statements
           - pgstattuple
+          - pg_prewarm
 
       - name: INIT PGBENCH TABLES
         shell: pgbench -i {{ workload_db_name }}

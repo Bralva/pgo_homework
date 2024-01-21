@@ -10,16 +10,17 @@
         vacuumdb -a -f -z -v
       args:
         chdir: /var/lib/postgresql/
+      when: pgbench_vacuumfull|bool
 
-    - name: benchmark
+    - name: RUN PGBENCH
       shell: |
         /usr/lib/postgresql/{{ postgresql_version }}/bin/pgbench -c {{ pgbench_clients }} -j {{ pgbench_jobs }} -T {{ pgbench_time }} -f {{ pgbench_workload_file }} -U postgres {{ workload_db_name }}
       args:
         chdir: /var/lib/postgresql/
       register: _pgbench_result
 
-    - name: show _pgbench_result
+    - name: SHOW PGBENCH RESULT
       debug:
-        var: _pgbench_result
+        var: _pgbench_result.stdout
 
 

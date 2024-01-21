@@ -4,23 +4,23 @@
   tasks:
     # postgresql.conf
 
-    - name: Check Backup config stat
+    - name: CHECK BACKUP FILE EXISTS
       ansible.builtin.stat:
         path: "/root/postgresql.conf"
       register: _backup_config
   
     - block: 
-      - name: Restore original config
+      - name: RESTORE ORIGINAL CONFIG
         ansible.builtin.copy:
           remote_src: true
           src: "/root/postgresql.conf"
           dest: "/etc/postgresql/{{ postgresql_version }}/main/postgresql.conf"
 
-      - name: Basic usage
+      - name: PWD SHOW
         ansible.builtin.debug:
           msg: "'{{ lookup('ansible.builtin.env', 'PWD') }}'"
 
-      - name: Update prepared config from cybertec
+      - name: UPDATE CONFIG
         ansible.builtin.blockinfile:
           path: "/etc/postgresql/{{ postgresql_version }}/main/postgresql.conf"
           insertbefore: "EOF"
@@ -28,19 +28,19 @@
         with_items:
           - "{{ lookup('ansible.builtin.file', '{{ workload_files_dir }}/files/configs/pg_{{ postgresql_version }}.conf') }}"
         notify:
-          - Restart postgresql
+          - RESTART POSTGRESQL
         when: postgresql_cybertec_config|bool
           
 
-      - name: set listen to all interfaces
+      - name: SET LISTEN TO ALL INTERFACES
         ansible.builtin.lineinfile: 
           dest: "/etc/postgresql/{{ postgresql_version }}/main/postgresql.conf"
           regexp: "listen_addresses =" 
           line: "listen_addresses = '*'" 
           state: present
-        notify: Restart postgresql
+        notify: RESTART POSTGRESQL
 
-      - name: Added entries to hba list
+      - name: ADD ENTRIES TO HBA
         community.postgresql.postgresql_pg_hba:
           dest: /etc/postgresql/{{ postgresql_version }}/main/pg_hba.conf
           contype: "{{ item.contype }}"
@@ -52,16 +52,16 @@
         with_items:
           - "{{ postgresql_hba_list }}"
         notify:
-          - Reload postgresql
+          - RELOAD POSTGRESQL
       when: _backup_config.stat.exists
 
   handlers:
-    - name: Restart postgresql
+    - name: RESTART POSTGRESQL
       ansible.builtin.service:
         name: postgresql
         state: restarted
 
-    - name: Reload postgresql
+    - name: RELOAD POSTGRESQL
       ansible.builtin.service:
         name: postgresql
         state: reloaded

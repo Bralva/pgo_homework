@@ -1,6 +1,6 @@
-pgbench_clients: 10
-pgbench_jobs: 4
-pgbench_time: 10
+pgbench_clients: 20
+pgbench_jobs: 8
+pgbench_time: 30
 pgbench_workload_file: workload.sql
-
+pgbench_vacuumfull: false
 

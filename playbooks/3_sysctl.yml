@@ -11,7 +11,7 @@
     # Hugepagesize:       2048 kB
     # round (2238736 / 2048) = 
     
-    - name: Set sysctl params
+    - name: SET SYSCTL PARAMS
       ansible.posix.sysctl:
         name: "{{ item.name }}"
         value: "{{ item.value }}"
@@ -19,18 +19,18 @@
       with_items:
         - "{{ sysctl_params }}"
       notify:
-        - Reboot
+        - REBOOT
 
-    - name: disable thp persisent
+    - name: DISABLE THP PERSISENT
       lineinfile:
         path: /etc/sysfs.conf
         create: true
         regexp: '^kernel\/mm\/transparent\_hugepage\/enabled'
         line: kernel/mm/transparent_hugepage/enabled = never
 
-    - name: disable transparent huge pages not persistent
+    - name: DISABLE THP ONLINE
       shell: echo never {{ ">" }} /sys/kernel/mm/transparent_hugepage/enabled
 
   handlers:
-    - name: Reboot
+    - name: REBOOT
       ansible.builtin.reboot:

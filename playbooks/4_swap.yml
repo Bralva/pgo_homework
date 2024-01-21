@@ -1,4 +1,5 @@
-- hosts: all
+- name: SET SWAP FILE
+  hosts: all
   gather_facts: true
   become: true
   roles:

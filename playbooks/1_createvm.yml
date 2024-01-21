@@ -1,14 +1,15 @@
-- hosts: localhost
+- name: YACLOUD VM CRUD PLAYBOOK
+  hosts: localhost
   connection: local
   gather_facts: false
   #vars:
   #  ansible_user: root
   tasks:
-  - name: debug
+  - name: SHOW CLOUD_VMS LIST
     debug:
       var: cloud_vms
 
-  - name: Create yandex cloud vm
+  - name: YACLOUD VM
     ycc_vm:
       auth:
         token: "{{ yacloud_token }}"
