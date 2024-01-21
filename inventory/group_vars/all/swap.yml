@@ -1,0 +1,1 @@
+swap_file_size_mb: "{{ [(ansible_memory_mb.real.total / 3), 65536] | min | int }}"

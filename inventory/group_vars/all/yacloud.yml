@@ -1,0 +1,15 @@
+yacloud_user: brusnicin
+yacloud_user_public_ssh: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJ5ThnzDOfkqTVio6TKgCJwEd4fDHDXOUCBq6kenHmJw brusnicyn.a"
+yacloud_subnet_id: "e9b4r41vvkshnroipq7m"
+# yacloud_user_data: |
+#   users:
+#     - name: {{ yc_user }}
+#       groups: sudo
+#       shell: /bin/bash
+#       sudo: 'ALL=(ALL) NOPASSWD:ALL'
+#       ssh-authorized-keys:
+#         - "{{ yc_user_public_ssh }}"
+        
+yacloud_folder_id: "b1g83ioj3hbvp9choduv"
+yacloud_platform_id: "Intel Broadwell"
+yacloud_image_id: "fd8auu58m9ic4rtekngm"

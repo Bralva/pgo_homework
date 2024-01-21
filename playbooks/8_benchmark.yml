@@ -1,0 +1,25 @@
+- hosts: all
+  gather_facts: true
+  become: true
+  become_user: postgres
+
+  tasks:
+
+    - name: VACUUM FULL ANALYZE ALL DBS
+      shell: |
+        vacuumdb -a -f -z -v
+      args:
+        chdir: /var/lib/postgresql/
+
+    - name: benchmark
+      shell: |
+        /usr/lib/postgresql/{{ postgresql_version }}/bin/pgbench -c {{ pgbench_clients }} -j {{ pgbench_jobs }} -T {{ pgbench_time }} -f {{ pgbench_workload_file }} -U postgres {{ workload_db_name }}
+      args:
+        chdir: /var/lib/postgresql/
+      register: _pgbench_result
+
+    - name: show _pgbench_result
+      debug:
+        var: _pgbench_result
+
+

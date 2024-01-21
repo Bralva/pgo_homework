@@ -1,0 +1,67 @@
+- hosts: all
+  gather_facts: true
+  become: true
+  tasks:
+    # postgresql.conf
+
+    - name: Check Backup config stat
+      ansible.builtin.stat:
+        path: "/root/postgresql.conf"
+      register: _backup_config
+  
+    - block: 
+      - name: Restore original config
+        ansible.builtin.copy:
+          remote_src: true
+          src: "/root/postgresql.conf"
+          dest: "/etc/postgresql/{{ postgresql_version }}/main/postgresql.conf"
+
+      - name: Basic usage
+        ansible.builtin.debug:
+          msg: "'{{ lookup('ansible.builtin.env', 'PWD') }}'"
+
+      - name: Update prepared config from cybertec
+        ansible.builtin.blockinfile:
+          path: "/etc/postgresql/{{ postgresql_version }}/main/postgresql.conf"
+          insertbefore: "EOF"
+          block: "{{ item }}"
+        with_items:
+          - "{{ lookup('ansible.builtin.file', '{{ workload_files_dir }}/files/configs/pg_{{ postgresql_version }}.conf') }}"
+        notify:
+          - Restart postgresql
+        when: postgresql_cybertec_config|bool
+          
+
+      - name: set listen to all interfaces
+        ansible.builtin.lineinfile: 
+          dest: "/etc/postgresql/{{ postgresql_version }}/main/postgresql.conf"
+          regexp: "listen_addresses =" 
+          line: "listen_addresses = '*'" 
+          state: present
+        notify: Restart postgresql
+
+      - name: Added entries to hba list
+        community.postgresql.postgresql_pg_hba:
+          dest: /etc/postgresql/{{ postgresql_version }}/main/pg_hba.conf
+          contype: "{{ item.contype }}"
+          users: "{{ item.users }}"
+          source: "{{ item.source }}"
+          databases: "{{ item.databases }}"
+          method: "{{ item.method }}"
+          create: true
+        with_items:
+          - "{{ postgresql_hba_list }}"
+        notify:
+          - Reload postgresql
+      when: _backup_config.stat.exists
+
+  handlers:
+    - name: Restart postgresql
+      ansible.builtin.service:
+        name: postgresql
+        state: restarted
+
+    - name: Reload postgresql
+      ansible.builtin.service:
+        name: postgresql
+        state: reloaded

@@ -1,0 +1,15 @@
+sysctl_params:
+  - name: vm.swappiness
+    value: 5
+    state: present
+  - name: vm.nr_hugepages
+    value: 120
+    state: present
+  - name: vm.overcommit_memory
+    value: 2
+    state: present
+  - name: vm.overcommit_ratio
+    value: 50
+    state: present
+
+    

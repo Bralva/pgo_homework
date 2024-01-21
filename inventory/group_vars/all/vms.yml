@@ -1,0 +1,7 @@
+cloud_vms:
+  - name: pg14
+    core_fraction: 100
+    cores: 4
+    memory: 8
+    disk_size: 100
+    enabled: true

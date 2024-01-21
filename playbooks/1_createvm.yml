@@ -1,0 +1,47 @@
+- hosts: localhost
+  connection: local
+  gather_facts: false
+  #vars:
+  #  ansible_user: root
+  tasks:
+  - name: debug
+    debug:
+      var: cloud_vms
+
+  - name: Create yandex cloud vm
+    ycc_vm:
+      auth:
+        token: "{{ yacloud_token }}"
+      name: "{{ item.name }}"
+      login: "{{ yacloud_user }}"
+      public_ssh_key: "{{ yacloud_user_public_ssh }}"
+      hostname: "{{ item.name }}"
+      zone_id: ru-central1-a
+      folder_id: "{{ yacloud_folder_id }}"
+      platform_id: "{{ yacloud_platform_id }}"
+      core_fraction: "{{ item.core_fraction }}"
+      cores: "{{ item.cores }}"
+      memory: "{{ item.memory }}"
+      image_id: "{{ yacloud_image_id }}"
+      disk_type: ssd
+      disk_size: "{{ item.disk_size }}"
+      assign_public_ip: true
+      subnet_id: "{{ yacloud_subnet_id }}"
+      preemptible: true
+      # metadata:
+      #     user-data: "{{ yacloud_user_data }}"
+      state: "{{ item.enabled | ternary('present', 'absent') }}"
+    with_items: "{{ cloud_vms }}"
+
+  # - name: Stop vm
+  #   ycc_vm:
+  #     auth:
+  #       token: "{{ yacloud_token }}"
+  #     name: "{{ inventory_hostname }}"
+  #     operation: stop
+  # - name: Start vm
+  #   ycc_vm:
+  #     auth:
+  #       token: "{{ yacloud_token }}"
+  #     name: "{{ inventory_hostname }}"
+  #     operation: start

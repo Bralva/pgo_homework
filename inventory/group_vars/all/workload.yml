@@ -1,0 +1,6 @@
+workload_db_size: medium
+workload_db_file: "{{ workload_db_name }}_{{ workload_db_size }}.tar.gz"
+workload_files_dir: "{{ lookup('ansible.builtin.env', 'PWD') }}"
+workload_file_url: "https://storage.googleapis.com/thaibus/{{ workload_db_file }}"
+workload_db_name: thai
+workload_force: false

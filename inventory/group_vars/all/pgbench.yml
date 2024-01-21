@@ -1,0 +1,6 @@
+pgbench_clients: 10
+pgbench_jobs: 4
+pgbench_time: 10
+pgbench_workload_file: workload.sql
+
+

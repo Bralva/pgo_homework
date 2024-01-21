@@ -1,0 +1,8 @@
+- hosts: all
+  #connection: local
+  gather_facts: false
+  vars:
+   ansible_user: "{{ yacloud_user }}"
+  tasks:
+    - name: Example from an Ansible Playbook
+      ansible.builtin.ping:

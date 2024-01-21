@@ -1,0 +1,95 @@
+- hosts: all
+  gather_facts: true
+  become: true
+  become_user: postgres
+
+  tasks:
+
+    - name: CHECK FILE {{ workload_db_file }} EXISTS
+      ansible.builtin.stat:
+        path: "/var/lib/postgresql/{{ workload_db_file }}"
+      register: _workload_db_file
+
+    - name: Preparing Block for Test database
+      block: 
+      
+      - name: DOWNLOAD {{ workload_db_file }} FROM STATIC TO PG WORKING DIR
+        ansible.builtin.get_url:
+          url: "{{ workload_file_url }}"
+          dest: "/var/lib/postgresql/{{ workload_db_file }}"
+          owner: postgres
+          group: postgres
+          mode: '0644'
+        when: not _workload_db_file.stat.exists
+
+      - name: REMOVE {{ workload_db_name }}.sql DUMP FILE
+        ansible.builtin.file:
+          path: "/var/lib/postgresql/{{ workload_db_name }}.sql"
+          state: absent
+        when: not _workload_db_file.stat.exists
+        
+      - name: UNARCHIVE {{ workload_db_file }}
+        ansible.builtin.unarchive:
+          src: "/var/lib/postgresql/{{ workload_db_file }}"
+          dest: /var/lib/postgresql
+          remote_src: yes
+        when: not _workload_db_file.stat.exists
+
+      - name: DROP DATABASE {{ workload_db_name }}
+        community.postgresql.postgresql_db:
+          name: "{{ workload_db_name }}"
+          state: absent
+        when: not _workload_db_file.stat.exists
+
+      - name: CREATE DATABASE {{ workload_db_name }}
+        community.postgresql.postgresql_db:
+          name: "{{ workload_db_name }}"
+
+      - name: CREATE EXTENSIONS FOR {{ workload_db_name }}
+        community.postgresql.postgresql_ext:
+          name: "{{ item }}"
+          db: "{{ workload_db_name }}"
+        with_items:
+          - pg_stat_statements
+          - pgstattuple
+
+      - name: INIT PGBENCH TABLES
+        shell: pgbench -i {{ workload_db_name }}
+
+      - name: RESTORE DUMP TO {{ workload_db_name }}
+        shell: "psql -d {{ workload_db_name }} < /var/lib/postgresql/{{ workload_db_name }}.sql"
+
+      when: not _workload_db_file.stat.exists or workload_force|bool
+
+    - name: COPY WORKLOAD FILES 
+      ansible.builtin.copy:
+        src: "{{ workload_files_dir}}/files/sql/workloads/"
+        dest: "/var/lib/postgresql/"
+        owner: postgres
+        group: postgres
+        mode: '0644'
+        remote_src: false
+
+  # # INIT PGBENCH FOR POSTGRES DB
+  #   - name: init pgbench
+  #     shell: pgbench -i thai
+
+        # Красиво но не пашет - msg: 'Cannot read file ''/var/lib/postgresql/thai.sql'' : '
+        # https://github.com/ansible-collections/community.postgresql/issues/180
+        # - name: Init thai db (psql -d thai < thai.sql)
+        #   community.postgresql.postgresql_script:
+        #     db: thai
+        #     path: /var/lib/postgresql/thai.sql
+        #   register: resulit
+        
+        # - name: Print init result
+        #   ansible.builtin.debug:
+        #     var: resulit.query
+        # - name: Print init result
+        #   ansible.builtin.debug:
+        #     var: resulit.query_result
+        # - name: Print init result
+        #   ansible.builtin.debug:
+        #     var: resulit.statusmessage # rowcount
+
+

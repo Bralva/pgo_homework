@@ -1,0 +1,36 @@
+- hosts: all
+  gather_facts: true
+  become: true
+  tasks:
+
+    # $ head -1 /var/lib/postgresql/postmaster.pid
+    # 7192
+    # grep ^VmPeak /proc/$(head -1 /var/lib/postgresql/15/main/postmaster.pid)/status
+    # VmPeak:	  218584 kB
+    # grep ^Hugepagesize /proc/meminfo
+    # Hugepagesize:       2048 kB
+    # round (2238736 / 2048) = 
+    
+    - name: Set sysctl params
+      ansible.posix.sysctl:
+        name: "{{ item.name }}"
+        value: "{{ item.value }}"
+        state: "{{ item.state | default('absent') }}"
+      with_items:
+        - "{{ sysctl_params }}"
+      notify:
+        - Reboot
+
+    - name: disable thp persisent
+      lineinfile:
+        path: /etc/sysfs.conf
+        create: true
+        regexp: '^kernel\/mm\/transparent\_hugepage\/enabled'
+        line: kernel/mm/transparent_hugepage/enabled = never
+
+    - name: disable transparent huge pages not persistent
+      shell: echo never {{ ">" }} /sys/kernel/mm/transparent_hugepage/enabled
+
+  handlers:
+    - name: Reboot
+      ansible.builtin.reboot:

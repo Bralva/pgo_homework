@@ -1,0 +1,3 @@
+ansible/files/thai_*.tar.gz
+.venv
+__pycache__
