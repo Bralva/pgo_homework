@@ -31,7 +31,6 @@
           - RESTART POSTGRESQL
         when: postgresql_cybertec_config|bool
           
-
       - name: SET LISTEN TO ALL INTERFACES
         ansible.builtin.lineinfile: 
           dest: "/etc/postgresql/{{ postgresql_version }}/main/postgresql.conf"

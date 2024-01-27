@@ -12,15 +12,65 @@
         chdir: /var/lib/postgresql/
       when: pgbench_vacuumfull|bool
 
-    - name: RUN PGBENCH
+    - name: RUN PGBENCH INTERNAL SIMPLE
+      vars:
+        workload_db_name: postgres
+        pgbench_protocol: simple
       shell: |
-        /usr/lib/postgresql/{{ postgresql_version }}/bin/pgbench -c {{ pgbench_clients }} -j {{ pgbench_jobs }} -T {{ pgbench_time }} -f {{ pgbench_workload_file }} -U postgres {{ workload_db_name }}
+        /usr/lib/postgresql/{{ postgresql_version }}/bin/pgbench \
+        -c {{ pgbench_clients }} \
+        -j {{ pgbench_jobs }} \
+        -T {{ pgbench_time }} \
+        -b {{ pgbench_builtin_workload }} \
+        -U postgres {{ workload_db_name }} \
+        -M {{ pgbench_protocol }} \
+        -v 
+
       args:
         chdir: /var/lib/postgresql/
-      register: _pgbench_result
+      register: _pgbench_internal_simple
+      
 
-    - name: SHOW PGBENCH RESULT
+    - name: SHOW PGBENCH INTERNAL SIMPLE RESULTS
       debug:
-        var: _pgbench_result.stdout
+        var: _pgbench_internal_simple.stdout
 
+    - name: RUN PGBENCH INTERNAL EXTENDED
+      vars:
+        workload_db_name: postgres
+        pgbench_protocol: extended
+      shell: |
+        /usr/lib/postgresql/{{ postgresql_version }}/bin/pgbench \
+        -c {{ pgbench_clients }} \
+        -j {{ pgbench_jobs }} \
+        -T {{ pgbench_time }} \
+        -b {{ pgbench_builtin_workload }} \
+        -U postgres {{ workload_db_name }} \
+        -M {{ pgbench_protocol }} \
+        -v 
 
+      args:
+        chdir: /var/lib/postgresql/
+      register: _pgbench_internal_extended
+      
+
+    - name: SHOW PGBENCH INTERNAL EXTENDED RESULTS
+      debug:
+        var: _pgbench_internal_extended.stdout
+
+    - name: RUN PGBENCH EXTERNAL
+      shell: |
+        /usr/lib/postgresql/{{ postgresql_version }}/bin/pgbench \
+        -c {{ pgbench_clients }} \
+        -j {{ pgbench_jobs }} \
+        -T {{ pgbench_time }} \
+        -f {{ pgbench_workload_file }} \
+        -U postgres {{ workload_db_name }}
+      args:
+        chdir: /var/lib/postgresql/
+      register: _pgbench_external
+      
+
+    - name: SHOW PGBENCH EXTERNAL RESULTS
+      debug:
+        var: _pgbench_external.stdout

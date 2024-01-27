@@ -4,7 +4,7 @@ pvm_list:
     cores: 4
     disks:
       - name: scsi0
-        size: 20
+        size: 100
         state: resized
     # update: true
       # - name: scsi1
@@ -13,5 +13,5 @@ pvm_list:
     cores: 4
     disks:
       - name: scsi0
-        size: 20
+        size: 100
         state: resized

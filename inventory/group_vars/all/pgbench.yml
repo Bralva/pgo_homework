@@ -3,4 +3,5 @@ pgbench_jobs: 8
 pgbench_time: 30
 pgbench_workload_file: workload.sql
 pgbench_vacuumfull: false
-
+pgbench_builtin_workload: tpcb-like
+#pgbench_protocol: simple|extended|prepared

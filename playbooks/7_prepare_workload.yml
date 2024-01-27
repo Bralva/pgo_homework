@@ -54,9 +54,6 @@
           - pgstattuple
           - pg_prewarm
 
-      - name: INIT PGBENCH TABLES
-        shell: pgbench -i {{ workload_db_name }}
-
       - name: RESTORE DUMP TO {{ workload_db_name }}
         shell: "psql -d {{ workload_db_name }} < /var/lib/postgresql/{{ workload_db_name }}.sql"
 
@@ -71,26 +68,5 @@
         mode: '0644'
         remote_src: false
 
-  # # INIT PGBENCH FOR POSTGRES DB
-  #   - name: init pgbench
-  #     shell: pgbench -i thai
-
-        # Красиво но не пашет - msg: 'Cannot read file ''/var/lib/postgresql/thai.sql'' : '
-        # https://github.com/ansible-collections/community.postgresql/issues/180
-        # - name: Init thai db (psql -d thai < thai.sql)
-        #   community.postgresql.postgresql_script:
-        #     db: thai
-        #     path: /var/lib/postgresql/thai.sql
-        #   register: resulit
-        
-        # - name: Print init result
-        #   ansible.builtin.debug:
-        #     var: resulit.query
-        # - name: Print init result
-        #   ansible.builtin.debug:
-        #     var: resulit.query_result
-        # - name: Print init result
-        #   ansible.builtin.debug:
-        #     var: resulit.statusmessage # rowcount
-
-
+    - name: INIT PGBENCH TABLES
+      shell: pgbench -i postgres

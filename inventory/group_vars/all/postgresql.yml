@@ -8,6 +8,6 @@ postgresql_hba_list:
    users: all
    source: 127.0.0.1/32
    databases: all
-   method: md5
+   method: scram-sha-256
 
-postgresql_cybertec_config: true
+postgresql_cybertec_config: false

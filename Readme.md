@@ -32,3 +32,4 @@ yacloud_token: "OAUTH_TOKEN"
 
 `ansible-playbook --vault-password-file=~/vault_test_file -i inventory/group_vars/all/yacloud_compute.yml -i inventory playbooks/<название плейбука>.yml`
 
+
