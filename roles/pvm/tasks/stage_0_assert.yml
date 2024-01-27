@@ -1,0 +1,10 @@
+---
+
+# - name: "Asserts"
+#   ansible.builtin.assert:
+#     that:
+#       - pvm_api_host is defined
+#       - pvm_api_user is defined
+#       - pvm_api_password is defined
+#       - pvm_api_token_id is defined
+#       - pvm_api_token_secret is defined

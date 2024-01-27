@@ -1,0 +1,114 @@
+---
+# Default Global Variables
+pvm_api_host: ''
+pvm_api_user: ''
+pvm_api_password: ''
+pvm_api_token_id: ''
+pvm_api_token_secret: ''
+
+
+pvm_description: ''
+pvm_keyboard: ''
+pvm_node: ''
+
+
+pvm_override:
+  acpi: ''
+  agent: ''
+  api_host: '{{ pvm_api_host }}' 
+  api_user: '{{ pvm_api_user if pvm_api_user else lookup("env","PROXMOX_USER") }}'
+  api_password: '{{ pvm_api_password if pvm_api_password else lookup("env","PROXMOX_PASSWORD") }}'
+  api_token_id: '{{ pvm_api_token_id if pvm_api_token_id else lookup("env","PROXMOX_TOKEN_ID") }}'
+  api_token_secret: '{{ pvm_api_token_secret if pvm_api_token_secret else lookup("env","PROXMOX_TOKEN_SECRET") }}'
+  args: ''
+  autostart: ''
+  balloon: '0'
+  bios: ''
+  # Boot from disk and network
+  boot: ''
+  bootdisk: ''
+  clone: 'debian-11-template'
+  cores: '1'
+  cpu: ''
+  cpulimit: ''
+  cpuunits: ''
+  delete: ''
+  description: '{{ pvm_description }}'
+  digest: ''
+  force: ''
+  format: 'unspecified'
+  freeze: ''
+  full: 'yes'
+  hostpci: ''
+  hotplug: '0'
+  hugepages: ''
+  ide: ''
+  keyboard: '{{ pvm_keyboard }}'
+  kvm: 'yes'
+  localtime: ''
+  lock: ''
+  machine: ''
+  memory: '512'
+  migrate_downtime: ''
+  migrate_speed: ''
+  name: ''
+  net: ''
+  newid: ''
+  node: '{{ pvm_node }}'
+  numa: ''
+  numa_enabled: ''
+  onboot: 'yes'
+  ostype: 'l26'
+  parallel: ''
+  pool: ''
+  protection: ''
+  # Set behavior to compatibility because of "force" bug
+  proxmox_default_behavior: 'no_defaults'
+  reboot: ''
+  revert: ''
+  sata: ''
+  scsi: ''
+  # virtio-scsi-pci for better performance
+  scsihw: 'virtio-scsi-single'
+  serial: ''
+  shares: ''
+  skiplock: ''
+  smbios: ''
+  snapname: ''
+  sockets: '1'
+  startdate: ''
+  startup: ''
+  state: ''
+  storage: ''
+  tablet: 'no'
+  target: ''
+  tdf: ''
+  template: 'no'
+  timeout: ''
+  update: 'true'
+  validate_certs: ''
+  vcpus: ''
+  vga: ''
+  virtio: ''
+  vmid: ''
+  watchdog: ''
+
+# list of pve resources 
+pvm_list: []
+  # - name: pg14
+  #   memory: 8192
+  #   cores: 4
+  #   disks:
+  #     - name: scsi0
+  #       size: 23
+  #       state: resized
+  #   # update: true
+  #     # - name: scsi1
+  # - name: pg15
+  #   memory: 8192
+  #   cores: 4
+  #   disks:
+  #     - name: scsi0
+  #       size: 31
+  #       state: resized
+

@@ -1,0 +1,17 @@
+pvm_list:
+  - name: pg14
+    memory: 8192
+    cores: 4
+    disks:
+      - name: scsi0
+        size: 20
+        state: resized
+    # update: true
+      # - name: scsi1
+  - name: pg15
+    memory: 8192
+    cores: 4
+    disks:
+      - name: scsi0
+        size: 20
+        state: resized

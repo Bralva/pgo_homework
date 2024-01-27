@@ -1,0 +1,11 @@
+---
+# vars file for proxmox_vm
+pvm_deb_requirements:
+ - python3-pip
+
+pvm_darwin_requirements:
+ - python3
+
+pvm_pip_dependencies:
+ - requests
+ - proxmoxer

@@ -1,0 +1,42 @@
+
+
+# Requirements Block Debian Based
+- block:
+    - name: "Install requirements"
+      ansible.builtin.package:
+        state: "present"
+        name: "{{ item }}"
+        install_recommends: no
+      loop:
+        - "{{ pvm_deb_requirements | default ([]) }}"
+  ignore_errors: true
+  delegate_to: localhost
+  when: 
+    - ansible_os_family is defined
+    - ansible_os_family == 'Ubuntu' or ansible_os_family == 'Debian' 
+
+# Requirements Block Darwin Based
+- block:
+    - name: "Install requirements"
+      community.general.homebrew:
+        state: "present"
+        name: "{{ item }}"
+      loop:
+        - "{{ pvm_darwin_requirements | default ([]) }}"
+  ignore_errors: true
+  delegate_to: localhost
+  when: 
+    - ansible_os_family is defined
+    - ansible_os_family == "Darwin"
+
+# Dependencies Block
+- block:
+    - name: "Install Dependencies"
+      ansible.builtin.pip:
+        state: "present"
+        name: "{{ item }}"
+      loop:
+        - "{{ pvm_pip_dependencies | default ([]) }}"
+  ignore_errors: true
+  delegate_to: localhost
+

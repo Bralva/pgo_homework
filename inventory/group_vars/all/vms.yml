@@ -4,4 +4,4 @@ cloud_vms:
     cores: 4
     memory: 8
     disk_size: 100
-    enabled: true
+    enabled: false

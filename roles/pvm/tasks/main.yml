@@ -1,0 +1,161 @@
+---
+- name: "Include stage assert"
+  ansible.builtin.import_tasks: stage_0_assert.yml
+  tags:
+    - assert
+    - prepare
+    - start
+    - started
+    - absent
+    - delete
+    - stop
+    - stopped
+    - restart
+    - restarted
+    - list
+    - current
+    - update
+    - pvm_assert
+    - pvm_prepare
+    - pvm_start
+    - pvm_started
+    - pvm_absent
+    - pvm_delete
+    - pvm_stop
+    - pvm_stopped
+    - pvm_restart
+    - pvm_restarted
+    - pvm_list
+    - pvm_current
+    - pvm_update
+
+- name: "Include stage prepare"
+  ansible.builtin.import_tasks: stage_1_prepare.yml
+  tags:
+    - assert
+    - prepare
+    - start
+    - started
+    - absent
+    - delete
+    - stop
+    - stopped
+    - restart
+    - restarted
+    - list
+    - current
+    - update
+    - pvm_assert
+    - pvm_prepare
+    - pvm_start
+    - pvm_started
+    - pvm_absent
+    - pvm_delete
+    - pvm_stop
+    - pvm_stopped
+    - pvm_restart
+    - pvm_restarted
+    - pvm_list
+    - pvm_current
+    - pvm_update
+
+- name: "Include stage create"
+  ansible.builtin.import_tasks: stage_2_create.yml
+  tags:
+    - create
+    - present
+    - pvm_create
+    - pvm_present
+
+
+# Set fact tasks for operations
+
+- set_fact:
+    pvm_operation: started
+  tags:
+    - never
+    - start
+    - started
+    - pvm_start
+    - pvm_started
+
+- set_fact:
+    pvm_operation: absent
+    pvm_force: true
+  tags:
+    - never
+    - absent
+    - delete
+    - pvm_absent
+    - pvm_delete
+
+- set_fact:
+    pvm_operation: stopped
+  tags:
+    - never
+    - stop
+    - stopped
+    - pvm_stop
+    - pvm_stopped
+
+- set_fact:
+    pvm_operation: restarted
+  tags:
+    - never
+    - restart
+    - restarted
+    - pvm_restart
+    - pvm_restarted
+
+- set_fact:
+    pvm_operation: current
+  tags:
+    - never
+    - list
+    - current
+    - pvm_list
+    - pvm_current
+
+- set_fact:
+    pvm_operation: present
+    pvm_update: true
+  tags:
+    - never
+    - update
+    - pvm_update
+    
+- name: "Include stage update"
+  ansible.builtin.import_tasks: stage_3_update.yml
+  tags:
+    # - never
+    - start
+    - started
+    - absent
+    - delete
+    - stop
+    - stopped
+    - restart
+    - restarted
+    - list
+    - current
+    - update
+    - pvm_start
+    - pvm_started
+    - pvm_absent
+    - pvm_delete
+    - pvm_stop
+    - pvm_stopped
+    - pvm_restart
+    - pvm_restarted
+    - pvm_list
+    - pvm_current
+    - pvm_update
+
+#   - name: Wait for Proxmox VM SSH Connection
+#     become: false
+#     ansible.builtin.wait_for_connection:
+#       delay: 3
+#       sleep: 3
+#       timeout: "{{ proxmox_vm_timeout }}"
+#     remote_user: "{{ proxmox_vm_ciuser }}"
+#     delegate_to: "{{ proxmox_vm_name }}"
