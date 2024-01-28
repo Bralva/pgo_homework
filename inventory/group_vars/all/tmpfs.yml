@@ -1,0 +1,2 @@
+tmpfs_mountpoint: "/var/lib/postgresql/{{ postgresql_version }}/"
+tmpfs_size_mb: 16384

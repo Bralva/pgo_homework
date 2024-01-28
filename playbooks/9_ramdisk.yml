@@ -1,0 +1,36 @@
+- hosts: all
+  gather_facts: true
+  become: true
+  vars:
+    tmpfs_mountpoint: "/var/lib/postgresql/{{ postgresql_version }}/"
+    tmpfs_size_mb: 16384
+  tasks:
+    - name: "mount tmpfs as {{ tmpfs_mountpoint }}"
+      ansible.posix.mount:
+        path: "{{ tmpfs_mountpoint}}"
+        src: tmpfs
+        fstype: tmpfs
+        opts: "size={{ tmpfs_size_mb }}m"
+        state: mounted
+      when:
+       - tmpfs_mountpoint is defined
+      tags: 
+       - never
+       - tmpfs
+
+    - name: drop postgresql cluster with stop
+      shell: pg_dropcluster --stop {{ postgresql_version }} main --stop
+      ignore_errors: true
+      when:
+       - tmpfs_mountpoint is defined
+      tags: 
+       - never
+       - tmpfs
+
+    - name: create postgresql cluster with start
+      shell: pg_createcluster --start {{ postgresql_version }} main
+      when:
+       - tmpfs_mountpoint is defined
+      tags: 
+       - never
+       - tmpfs

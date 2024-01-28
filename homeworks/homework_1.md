@@ -467,3 +467,54 @@ sysctl_params:
 
 
 
+### 5.2 Делаем редис из постгреса используя ram disk:
+
+```
+ansible-playbook --vault-password-file=~/vault_test_file -i inventory/hosts playbooks/9_ramdisk.yml -t tmpfs
+```
+
+- увеличим до 32GB ram
+- создаем рам диск 16GB и примонтируем к дата директории
+- реинициализируем кластер
+- снова готовим конфиги, инициализируем и загружаем тестовые данные для ворклоада
+
+Условия:
+
+| Параметр          | Стенд 1  | Стенд 2  |
+|-------------------|----------|----------|
+| Версии PG         | 14       | 15       |
+| RAM, Gb           | 32       | 32      |
+| CPU               | 8        | 8        |
+| Disk type         | SSD      | SSD      |
+| Db Size           | 10GB     | 10GB     |
+| DB Type           | OLTP     | OLTP     |
+| Connections       | 40       | 40       |
+| PGCONFIG          | cybertec | cybertec |
+| hugepages         | on       | on       |
+| swap              | on       | on       |
+| thp               | off      | off      |
+| Data Directory    | in-memory|in-memory |
+
+
+
+Результаты:
+
+| Workload Type     | tpc-b smpl    | tpc-b extd  | Thai Middl  | tpc-b smpl    | tpc-b extd  | Thai Middl  |
+|-------------------|---------------|-------------|-------------|---------------|-------------|-------------|
+| postgres ver      | 14            | 14          | 14          | 15            | 15          | 15          |
+| scale factor      | 1             | 1           | 1           | 1             | 1           | 1           |
+| clients           | 20            | 20          | 20          | 20            | 20          | 20          |
+| threads           | 8             | 8           | 8           | 8             | 8           | 8           |
+| max num tries     | 1             | 1           | 1           | 1             | 1           | 1           |
+| duration          | 30 s          | 30 s        | 30 s        | 30 s          | 30 s        | 30 s        |
+| test type         | simple        | extended    | external    | simple        | extended    | external    |
+| proc txs          | 115652        | 107690      | 2060155     | 116439        | 107056      | 1993618     |
+| failed txs        | 0             | 0           | 0           | 0             | 0           | 0           |
+| ltncy avg ms      | 5.187         | 5.571       | 0.291       | 5.152         | 5.603       | 0.301       |
+| init conn time ms | 11.912        | 11.879      | 11.572      | 12.153        | 14.636      | 11.540      |
+| tps (w/0 ict) ms  | 3855.433318   | 3590.000537 | 68696.522864| 3881.819387   | 3569.539229 | 66473.427774|
+
+|
+Выводы:
+ - Результаты при выключении fsync и использовании ram диск идентичные
+ - По сути выключение fsync равносильно писать в RAM

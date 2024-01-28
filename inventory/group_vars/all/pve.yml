@@ -1,6 +1,6 @@
 pvm_list:
   - name: pg14
-    memory: 16384
+    memory: 32768
     cores: 8
     disks:
       - name: scsi0
@@ -9,7 +9,7 @@ pvm_list:
         iothread: true
         ssd : true
   - name: pg15
-    memory: 16384
+    memory: 32768
     cores: 8
     disks:
       - name: scsi0
