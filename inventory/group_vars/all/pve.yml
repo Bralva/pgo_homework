@@ -1,17 +1,19 @@
 pvm_list:
   - name: pg14
-    memory: 8192
-    cores: 4
+    memory: 16384
+    cores: 8
     disks:
       - name: scsi0
         size: 100
-        state: resized
-    # update: true
-      # - name: scsi1
+        cache: unsafe
+        iothread: true
+        ssd : true
   - name: pg15
-    memory: 8192
-    cores: 4
+    memory: 16384
+    cores: 8
     disks:
       - name: scsi0
         size: 100
-        state: resized
+        cache: unsafe
+        iothread: true
+        ssd : true

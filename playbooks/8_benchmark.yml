@@ -11,6 +11,8 @@
       args:
         chdir: /var/lib/postgresql/
       when: pgbench_vacuumfull|bool
+      tags:
+        - pgbench_vacuumfull
 
     - name: RUN PGBENCH INTERNAL SIMPLE
       vars:
@@ -29,11 +31,15 @@
       args:
         chdir: /var/lib/postgresql/
       register: _pgbench_internal_simple
+      tags: 
+        - simple
       
 
     - name: SHOW PGBENCH INTERNAL SIMPLE RESULTS
       debug:
         var: _pgbench_internal_simple.stdout
+      tags: 
+        - simple
 
     - name: RUN PGBENCH INTERNAL EXTENDED
       vars:
@@ -52,11 +58,14 @@
       args:
         chdir: /var/lib/postgresql/
       register: _pgbench_internal_extended
-      
+      tags: 
+        - extended      
 
     - name: SHOW PGBENCH INTERNAL EXTENDED RESULTS
       debug:
         var: _pgbench_internal_extended.stdout
+      tags: 
+        - extended  
 
     - name: RUN PGBENCH EXTERNAL
       shell: |
@@ -69,8 +78,11 @@
       args:
         chdir: /var/lib/postgresql/
       register: _pgbench_external
-      
+      tags: 
+        - external        
 
     - name: SHOW PGBENCH EXTERNAL RESULTS
       debug:
         var: _pgbench_external.stdout
+      tags: 
+        - external   

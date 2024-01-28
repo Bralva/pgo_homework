@@ -176,7 +176,7 @@
    - pvm_operation is not defined
    - item.1.name is defined and item.0.name is defined
 
-- name: Update Proxmox Disk
+- name: Update Proxmox Disk Resized
   community.general.proxmox_disk:
    api_host: "{{ item.0['api_host'] if item.0.get('api_host') else ( pvm_override['api_host'] if pvm_override['api_host'] else omit ) }}"
    api_password: "{{ item.0['api_password'] if item.0.get('api_password') else ( pvm_override['api_password'] if pvm_override['api_password'] else omit ) }}"
@@ -190,10 +190,39 @@
    storage: "{{ item.0['storage'] if item.0.get('storage') else ( pvm_override['storage'] if pvm_override['storage'] else omit ) }}"
    size: "{{ item.1.size|string + 'G' if item.1.size is defined }}"
    create: "{{ item.1.create if item.1.create is defined else omit }}"
-   state: "{{ item.1.state if item.1.state is defined else omit }}"
+   state: "resized"
+   cache: "{{ item.1.cache if item.1.cache is defined else omit }}"
+   ssd: "{{ item.1.ssd if item.1.ssd is defined else omit }}"
+   aio: "{{ item.1.aio if item.1.aio is defined else omit }}"
+   iothread: "{{ item.1.iothread if item.1.iothread is defined else omit }}"
   delegate_to: localhost
   loop: "{{ pvm_list | subelements('disks',skip_missing=True) }}"
   when: 
    - pvm_operation is not defined
    - item.1.name is defined and item.0.name is defined
 
+
+- name: Update Proxmox Disk Parameters
+  community.general.proxmox_disk:
+   api_host: "{{ item.0['api_host'] if item.0.get('api_host') else ( pvm_override['api_host'] if pvm_override['api_host'] else omit ) }}"
+   api_password: "{{ item.0['api_password'] if item.0.get('api_password') else ( pvm_override['api_password'] if pvm_override['api_password'] else omit ) }}"
+   api_user: "{{ item.0['api_user'] if item.0.get('api_user') else ( pvm_override['api_user'] if pvm_override['api_user'] else omit ) }}"
+   api_token_secret: "{{ item.0['api_token_secret'] if item.0.get('api_token_secret') else ( pvm_override['api_token_secret'] if pvm_override['api_token_secret'] else omit ) }}"
+   api_token_id: "{{ item.0['api_token_id'] if item.0.get('api_token_id') else ( pvm_override['api_token_id'] if pvm_override['api_token_id'] else omit ) }}"
+   vmid: "{{ item.0['vmid'] if item.0.get('vmid') else ( pvm_override['vmid'] if pvm_override['vmid'] else omit ) }}"
+   name: "{{ item.0['name'] if item.0.get('name') else ( pvm_override['name'] if pvm_override['name'] else omit ) }}"
+   disk: "{{ item.1.name }}"
+   format: "{{ item.1.format if item.1.format is defined else omit }}"
+   storage: "{{ item.0['storage'] if item.0.get('storage') else ( pvm_override['storage'] if pvm_override['storage'] else omit ) }}"
+   size: "{{ item.1.size|string + 'G' if item.1.size is defined }}"
+   create: "{{ item.1.create if item.1.create is defined else omit }}"
+   state: "present"
+   cache: "{{ item.1.cache if item.1.cache is defined else omit }}"
+   ssd: "{{ item.1.ssd if item.1.ssd is defined else omit }}"
+   aio: "{{ item.1.aio if item.1.aio is defined else omit }}"
+   iothread: "{{ item.1.iothread if item.1.iothread is defined else omit }}"
+  delegate_to: localhost
+  loop: "{{ pvm_list | subelements('disks',skip_missing=True) }}"
+  when: 
+   - pvm_operation is not defined
+   - item.1.name is defined and item.0.name is defined

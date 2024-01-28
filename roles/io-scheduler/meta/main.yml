@@ -1,0 +1,18 @@
+galaxy_info:
+  author: WB & Dudes
+  description: set io scheduler with systemd
+  company: WB
+
+  license: do what you want
+
+  min_ansible_version: 2.7.0
+  
+  platforms:
+  - name: Debian
+    versions:
+    - buster
+
+  galaxy_tags:
+    - ioscheduler
+  
+dependencies: []

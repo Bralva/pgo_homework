@@ -1,0 +1,27 @@
+- name: get list of block devices to test
+  shell: ls /sys/block/ | egrep '^(([shv]|xv)d[a-z])|(nvme[0-9a-z]+)$'
+  register: block_devs
+  changed_when: no
+  check_mode: no
+
+- name: set block device to use variable disk_scheduler as i/o scheduler
+  become: yes
+  shell: echo {{ disk_scheduler }} > /sys/block/{{ item }}/queue/scheduler
+  with_items: "{{ block_devs.stdout_lines }}"
+
+- name: set io-scheduler per disk
+  template:
+    src: io-scheduler.service.j2
+    dest: "/etc/systemd/system/io-scheduler-{{ item }}.service"
+  with_items: "{{ block_devs.stdout_lines }}"
+
+- name: Reload systemd units
+  systemd:
+    daemon_reload: yes
+
+- name: restart systemd units
+  systemd:
+    name: io-scheduler-{{ item }}.service
+    state: restarted
+    enabled: yes
+  with_items: "{{ block_devs.stdout_lines }}"

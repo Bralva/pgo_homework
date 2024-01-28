@@ -3,13 +3,11 @@
   become: true
   tasks:
 
-    # $ head -1 /var/lib/postgresql/postmaster.pid
-    # 7192
-    # grep ^VmPeak /proc/$(head -1 /var/lib/postgresql/15/main/postmaster.pid)/status
-    # VmPeak:	  218584 kB
+    # grep ^VmPeak /proc/$(head -1 /var/lib/postgresql/14/main/postmaster.pid)/status
+    # VmPeak:	  4380928 kB
     # grep ^Hugepagesize /proc/meminfo
     # Hugepagesize:       2048 kB
-    # round (2238736 / 2048) = 
+    # round (4380928 / 2048) = 2139,125
     
     - name: SET SYSCTL PARAMS
       ansible.posix.sysctl:

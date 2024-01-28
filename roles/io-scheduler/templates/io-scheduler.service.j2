@@ -1,0 +1,15 @@
+[Unit]
+Description=I/O Scheduler Setter for disk {{ item }}
+DefaultDependencies=no
+After=sysinit.target local-fs.target
+Before=basic.target
+
+[Service]
+Type=oneshot
+ExecStart=/bin/bash -c 'echo "{{ disk_scheduler }}" > /sys/block/{{ item }}/queue/scheduler'
+
+TimeoutSec=0
+RemainAfterExit=yes
+
+[Install]
+WantedBy=basic.target

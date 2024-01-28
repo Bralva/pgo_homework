@@ -3,7 +3,7 @@ sysctl_params:
     value: 5
     state: present
   - name: vm.nr_hugepages
-    value: 1090
+    value: 2200
     state: present
   - name: vm.overcommit_memory
     value: 2
