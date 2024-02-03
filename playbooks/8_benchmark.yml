@@ -20,24 +20,32 @@
         pgbench_protocol: simple
       shell: |
         /usr/lib/postgresql/{{ postgresql_version }}/bin/pgbench \
+        {% if pgbench_tx_per_conn|bool %}-C \ {% endif %}
+        -h {{ pgbench_host }} \
         -c {{ pgbench_clients }} \
         -j {{ pgbench_jobs }} \
         -T {{ pgbench_time }} \
         -b {{ pgbench_builtin_workload }} \
         -U postgres {{ workload_db_name }} \
         -M {{ pgbench_protocol }} \
+        -p {{ pgbench_postgresql_port }} \
         -v 
 
       args:
         chdir: /var/lib/postgresql/
+      environment: 
+        PGPASSWORD: "{{ postgres_password }}"
       register: _pgbench_internal_simple
+      when: pgbench_simple|bool
       tags: 
         - simple
+      
       
 
     - name: SHOW PGBENCH INTERNAL SIMPLE RESULTS
       debug:
         var: _pgbench_internal_simple.stdout
+      when: pgbench_simple|bool
       tags: 
         - simple
 
@@ -47,37 +55,50 @@
         pgbench_protocol: extended
       shell: |
         /usr/lib/postgresql/{{ postgresql_version }}/bin/pgbench \
+        {% if pgbench_tx_per_conn|bool %}-C \ {% endif %}
+        -h {{ pgbench_host }} \
         -c {{ pgbench_clients }} \
         -j {{ pgbench_jobs }} \
         -T {{ pgbench_time }} \
         -b {{ pgbench_builtin_workload }} \
         -U postgres {{ workload_db_name }} \
         -M {{ pgbench_protocol }} \
+        -p {{ pgbench_postgresql_port }} \
         -v 
 
       args:
         chdir: /var/lib/postgresql/
+      environment: 
+        PGPASSWORD: "{{ postgres_password }}"
       register: _pgbench_internal_extended
+      when: pgbench_extended|bool
       tags: 
         - extended      
 
     - name: SHOW PGBENCH INTERNAL EXTENDED RESULTS
       debug:
         var: _pgbench_internal_extended.stdout
+      when: pgbench_extended|bool
       tags: 
         - extended  
 
     - name: RUN PGBENCH EXTERNAL
       shell: |
         /usr/lib/postgresql/{{ postgresql_version }}/bin/pgbench \
+        {% if pgbench_tx_per_conn|bool %}-C \ {% endif %}
+        -h {{ pgbench_host }} \
         -c {{ pgbench_clients }} \
         -j {{ pgbench_jobs }} \
         -T {{ pgbench_time }} \
         -f {{ pgbench_workload_file }} \
+        -p {{ pgbench_postgresql_port }} \
         -U postgres {{ workload_db_name }}
       args:
         chdir: /var/lib/postgresql/
+      environment: 
+        PGPASSWORD: "{{ postgres_password }}"
       register: _pgbench_external
+      when: pgbench_external|bool
       tags: 
         - external        
 

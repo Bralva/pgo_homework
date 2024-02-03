@@ -1,5 +1,7 @@
 ---
 - name: Initial setup VM
-  hosts: localhost
+  hosts: all
+  gather_facts: false
+  connection: localhost
   roles:
     - pvm

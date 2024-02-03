@@ -1,0 +1,16 @@
+pgbouncer_admin: admindb
+
+
+
+pgbouncer_instances:
+ - pgbouncer
+ - pgbouncer_1
+ - pgbouncer_2
+#  - pgbouncer_3
+#  - pgbouncer_4
+#  - pgbouncer_5
+#  - pgbouncer_6
+#  - pgbouncer_7
+#  - pgbouncer_8
+#  - pgbouncer_9
+#  - pgbouncer_10 

@@ -77,6 +77,13 @@
      virtio: "{{ item['virtio'] if item.get('virtio') else ( pvm_override['virtio'] if pvm_override['virtio'] else omit ) }}"
      vmid: "{{ item['vmid'] if item.get('vmid') else ( pvm_override['vmid'] if pvm_override['vmid'] else omit ) }}"
      watchdog: "{{ item['watchdog'] if item.get('watchdog') else ( pvm_override['watchdog'] if pvm_override['watchdog'] else omit ) }}"
+     cicustom: "{{ item['cicustom'] if item.get('cicustom') else ( pvm_override['cicustom'] if pvm_override['cicustom'] else omit ) }}"
+     ciuser: "{{ item['ciuser'] if item.get('ciuser') else ( pvm_override['ciuser'] if pvm_override['ciuser'] else omit ) }}"
+     cipassword: "{{ item['ciuser'] if item.get('ciuser') else ( pvm_override['ciuser'] if pvm_override['ciuser'] else omit ) }}"
+     ipconfig: "{{ item['ipconfig'] if item.get('ipconfig') else ( pvm_override['ipconfig'] if pvm_override['ipconfig'] else omit ) }}"
+     nameservers: "{{ item['nameservers'] if item.get('nameservers') else ( pvm_override['nameservers'] if pvm_override['nameservers'] else omit ) }}"
+     searchdomains: "{{ item['searchdomains'] if item.get('searchdomains') else ( pvm_override['searchdomains'] if pvm_override['searchdomains'] else omit ) }}"
+     sshkeys: "{{ item['sshkeys'] if item.get('sshkeys') else ( pvm_override['sshkeys'] if pvm_override['sshkeys'] else omit ) }}"
   delegate_to: localhost
   with_items: "{{ pvm_list | default([]) }}"
 

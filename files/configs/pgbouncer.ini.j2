@@ -1,0 +1,27 @@
+[databases]
+
+thai = host=127.0.0.1 port=5432 dbname=thai
+
+[pgbouncer]
+
+logfile = /var/log/postgresql/{{ item }}.log
+
+pidfile = /var/run/postgresql/{{ item }}.pid
+
+unix_socket_dir = /var/run/postgresql/{{ item }}_sock
+
+listen_addr = *
+
+listen_port = 6432
+
+auth_type = scram-sha-256
+
+auth_file = /etc/pgbouncer/userlist.txt
+
+admin_users = admindb
+
+so_reuseport = 1
+
+pool_mode = transaction
+
+max_client_conn = 1000

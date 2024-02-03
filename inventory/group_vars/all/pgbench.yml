@@ -1,7 +1,13 @@
-pgbench_clients: 20
+pgbench_clients: 500
 pgbench_jobs: 8
 pgbench_time: 30
 pgbench_workload_file: workload.sql
 pgbench_vacuumfull: false
 pgbench_builtin_workload: tpcb-like
 #pgbench_protocol: simple|extended|prepared
+pgbench_postgresql_port: 5432
+pgbench_external: True
+pgbench_simple: False 
+pgbench_extended: False
+pgbench_host: 127.0.0.1
+pgbench_tx_per_conn: true

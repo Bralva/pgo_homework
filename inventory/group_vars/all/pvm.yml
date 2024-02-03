@@ -1,0 +1,20 @@
+pvm_list:
+  - name: "{{ inventory_hostname }}"
+    memory: "{{ pvm_memory }}"
+    cores: "{{ pvm_cores }}"
+    disks: "{{ pvm_disks }}"
+    ipconfig:
+      ipconfig0: "ip={{ ansible_ssh_host }}/24,gw=192.168.88.1"
+    nameservers: ''
+    searchdomains: ''
+    sshkeys: ''
+
+pvm_disks:
+    - name: scsi0
+      size: 40
+      iothread: true
+      ssd : true
+
+pvm_memory: 16384
+pvm_cores: 8
+

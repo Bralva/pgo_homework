@@ -85,13 +85,21 @@ pvm_override:
   tdf: ''
   template: 'no'
   timeout: ''
-  update: 'true'
+  update: 'yes'
   validate_certs: ''
   vcpus: ''
   vga: ''
   virtio: ''
   vmid: ''
   watchdog: ''
+  cicustom: ''
+  ciuser: ''
+  cipassword: ''
+  ipconfig: ''
+  nameservers: ''
+  searchdomains: ''
+  sshkeys: ''
+
 
 # list of pve resources 
 pvm_list: []

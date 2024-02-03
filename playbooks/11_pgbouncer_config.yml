@@ -1,0 +1,101 @@
+- hosts: all
+  gather_facts: true
+  become: true
+  tasks:
+
+    - name: Create individual directories for pgbouncers
+      ansible.builtin.file:
+        path: "/var/run/postgresql/{{ item }}_sock"
+        state: directory
+        recurse: yes
+        owner: postgres
+        group: postgres
+        mode: '0755'
+      loop: "{{ pgbouncer_instances | default([]) }}"
+
+    - name: Render multiple pgbouncer configs so_reuse_port
+      ansible.builtin.template:
+        src: "{{ workload_files_dir }}/files/configs/pgbouncer.ini.j2"
+        dest: "/etc/pgbouncer/{{ item }}.ini"
+        owner: postgres
+        group: postgres
+        mode: u=rw,g=r,o=r
+      loop: "{{ pgbouncer_instances | default([]) }}"
+
+    - name: Render multiple pgbouncer services so_reuse_port
+      ansible.builtin.template:
+        src: "{{ workload_files_dir }}/files/configs/pgbouncer.service.j2"
+        dest: "/lib/systemd/system/{{ item }}.service"
+        owner: postgres
+        group: postgres
+        mode: u=rw,g=r,o=r
+      loop: "{{ pgbouncer_instances | default([]) }}"
+
+    - name: result _pgshadow
+      become: true
+      become_user: postgres
+      changed_when: false
+      ansible.builtin.command: >
+          psql -p 5432 -U postgres -Atq
+          -c "SELECT concat('\"', usename, '\" \"', passwd, '\"') FROM pg_shadow"
+      register: _pgshadow
+
+    - name: show _pgshadow result
+      debug:
+        msg: |
+          {{ _pgshadow.stdout }}
+
+    - name: "generate userlist"
+      become: true
+      ansible.builtin.copy:
+        content: "{{ _pgshadow.stdout }}"
+        dest: "/etc/pgbouncer/userlist.txt"
+        group: "postgres"
+        owner: "postgres"
+        mode: 0600
+      register: _userlist_changed
+      when:
+        - _pgshadow is defined and _pgshadow | string | length > 0
+
+    - name: RESTART PGBOUNCERS
+      ansible.builtin.service:
+        name: "{{ item }}"
+        state: restarted
+        daemon_reload: true
+      loop: "{{ pgbouncer_instances | default([]) }}"
+
+    
+
+    - name: Collect service facts
+      ansible.builtin.service_facts:
+
+    - name: Print service facts
+      ansible.builtin.debug:
+        var: ansible_facts.services
+
+    - name: Print service facts
+      ansible.builtin.debug:
+        msg: |
+         {{ item.key.split('.')[0] }}
+      loop: "{{ ansible_facts.services | dict2items | selectattr('key', 'match', '^pgbouncer') | list }}"
+
+
+    - name: Set Fact _pgbouncer_services_to_delete
+      ansible.builtin.set_fact:
+        _pgbouncer_services_to_delete: "{{ _pgbouncer_services_to_delete | default([]) + [item.key] }}"
+      loop: "{{ ansible_facts.services | dict2items | selectattr('key', 'match', '^pgbouncer') | list }}"
+      when:
+       - item.key.split('.')[0] not in pgbouncer_instances
+
+    - name: Show _pgbouncer_services_to_delete
+      ansible.builtin.debug:
+        var: _pgbouncer_services_to_delete
+      when: _pgbouncer_services_to_delete is defined
+
+    - name: Stop services which not defined
+      ansible.builtin.systemd:
+        state: stopped
+        enabled: false
+        name: "{{ item }}"
+      loop: "{{ _pgbouncer_services_to_delete }}"
+      when: _pgbouncer_services_to_delete is defined

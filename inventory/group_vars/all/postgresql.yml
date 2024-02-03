@@ -1,7 +1,7 @@
 postgresql_hba_list:
  - contype: host
    users: all
-   source: 10.0.0.0/8
+   source: 0.0.0.0/0
    databases: all
    method: scram-sha-256
  - contype: host
@@ -10,4 +10,4 @@ postgresql_hba_list:
    databases: all
    method: scram-sha-256
 
-postgresql_cybertec_config: false
+postgresql_cybertec_config: True

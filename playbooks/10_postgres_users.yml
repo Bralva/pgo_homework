@@ -1,0 +1,21 @@
+- hosts: all
+  gather_facts: true
+  become: true
+  tasks:
+
+    - name: Create and change password
+      become_user: postgres
+      community.postgresql.postgresql_user:
+        name: "{{ item.name }}"
+        password: "{{ item.password }}"
+      environment:
+        PGOPTIONS: "-c password_encryption=scram-sha-256"
+      loop: "{{ postgresql_users }}"
+
+    - name: Grant Privileges
+      become_user: postgres
+      community.postgresql.postgresql_privs:
+        db: "{{ workload_db_name }}"
+        privs: all
+        type: database
+        role: "{{ pgbouncer_admin }}"
