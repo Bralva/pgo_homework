@@ -22,6 +22,6 @@ admin_users = admindb
 
 so_reuseport = 1
 
-pool_mode = transaction
+pool_mode = {{ pgbouncer_pool_mode | default('session') }}
 
-max_client_conn = 1000
+max_client_conn = {{ pgbouncer_max_client_conn | default(20) }}
