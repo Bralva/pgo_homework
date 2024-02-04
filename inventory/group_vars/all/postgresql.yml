@@ -11,6 +11,16 @@ postgresql_hba_list:
    databases: all
    method: scram-sha-256
 
+postgresql_system_limits:
+  - { domain: "postgres", limit_name: "nofile", limit_type: "soft", value: "65536" }
+  - { domain: "postgres", limit_name: "nofile", limit_type: "hard", value: "65536" }
+
 
 postgresql_cybertec_config: False
+postgresql_custom_params: True
+
+postgresql_system_params:
+  - name: max_connections
+    value: 1000
+
 

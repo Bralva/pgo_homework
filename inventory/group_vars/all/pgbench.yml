@@ -1,5 +1,5 @@
 pgbench_clients: 500
-pgbench_jobs: 8
+pgbench_jobs: 16
 pgbench_time: 30
 pgbench_workload_file: workload.sql
 pgbench_vacuumfull: false
@@ -10,4 +10,4 @@ pgbench_external: True
 pgbench_simple: False 
 pgbench_extended: False
 pgbench_host: 127.0.0.1
-pgbench_tx_per_conn: true
+pgbench_tx_per_conn: True

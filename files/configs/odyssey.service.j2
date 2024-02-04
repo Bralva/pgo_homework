@@ -9,7 +9,8 @@ User=postgres
 ExecStart=/usr/local/bin/odyssey /etc/odyssey/odyssey.conf
 ExecReload=/bin/kill -HUP $MAINPID
 KillSignal=SIGINT
-#LimitNOFILE=1024
+LimitNOFILE=20000
+LimitNOFILESoft=20000
 
 [Install]
 WantedBy=multi-user.target

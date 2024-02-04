@@ -1,20 +1,11 @@
 pgbouncer_admin: admindb
 
-
-
 pgbouncer_instances:
  - pgbouncer
-#  - pgbouncer_1
-#  - pgbouncer_2
-#  - pgbouncer_3
-#  - pgbouncer_4
-#  - pgbouncer_5
-#  - pgbouncer_6
-#  - pgbouncer_7
-#  - pgbouncer_8
-#  - pgbouncer_9
-#  - pgbouncer_10 
+ - pgbouncer_1
+ - pgbouncer_2
+ - pgbouncer_3
 
 pgbouncer_pool_mode: session
-
-pgbouncer_max_client_conn: 1000
+pgbouncer_max_client_conn: 10000
+pgbouncer_default_pool_size: 600

@@ -16,7 +16,7 @@ odyssey_dependencies:
 
 
 odyssey_pool_mode: session
-odyssey_client_max: 100
+odyssey_client_max: 10000
+odyssey_pool_size: 600
 odyssey_listen_port: 6433
-
-#odyssey_default_password: 
+odyssey_workers: 4

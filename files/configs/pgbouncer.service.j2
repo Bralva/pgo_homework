@@ -11,7 +11,8 @@ User=postgres
 ExecStart=/usr/sbin/pgbouncer /etc/pgbouncer/{{ item }}.ini
 ExecReload=/bin/kill -HUP $MAINPID
 KillSignal=SIGINT
-#LimitNOFILE=1024
+LimitNOFILE=20000
+LimitNOFILESoft=20000
 
 [Install]
 WantedBy=multi-user.target

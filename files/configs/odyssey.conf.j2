@@ -13,17 +13,17 @@ log_syslog_ident "odyssey"
 log_syslog_facility "daemon"
 log_file "/var/log/postgresql/odyssey.log"
 
-log_debug yes
-log_config yes
-log_session yes
+log_debug no
+log_config no
+log_session no
 log_query no
-log_stats yes
+log_stats no
 stats_interval 60
 log_general_stats_prom yes
 log_route_stats_prom no
 promhttp_server_port 7777
 
-workers "auto"
+workers {{ odyssey_workers | default('auto') }}
 resolvers 1
 
 readahead 8192
@@ -72,7 +72,7 @@ database default {
 		#password "{{ _postgres_password_hash }}"
 		storage "postgres_server"
 		pool "{{ odyssey_pool_mode | default('session') }}"
-		pool_size 0
+		pool_size {{ odyssey_pool_size | default(0) }}
 
 		auth_query "SELECT usename, passwd FROM pg_shadow WHERE usename=$1"
 		auth_query_user "postgres"

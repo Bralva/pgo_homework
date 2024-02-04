@@ -4,6 +4,17 @@
   tasks:
     # postgresql.conf
 
+    - name: set pam limits open files
+      ansible.builtin.pam_limits:
+        dest: "/etc/security/limits.d/postgresql.conf"
+        domain: "{{ item.domain }}"
+        limit_item: "{{ item.limit_name }}"
+        limit_type: "{{ item.limit_type | default ('soft') }}"
+        value: "{{ item.value }}"
+        comment: "{{ item.comment | default (omit) }}"
+      loop: "{{ postgresql_system_limits | default ([]) }}"
+
+
     - name: CHECK BACKUP FILE EXISTS
       ansible.builtin.stat:
         path: "/root/postgresql.conf"
@@ -27,8 +38,6 @@
           block: "{{ item }}"
         with_items:
           - "{{ lookup('ansible.builtin.file', '{{ workload_files_dir }}/files/configs/pg_{{ postgresql_version }}.conf') }}"
-        notify:
-          - RESTART POSTGRESQL
         when: postgresql_cybertec_config|bool
           
       - name: SET LISTEN TO ALL INTERFACES
@@ -37,7 +46,6 @@
           regexp: "listen_addresses =" 
           line: "listen_addresses = '*'" 
           state: present
-        notify: RESTART POSTGRESQL
 
       - name: ADD ENTRIES TO HBA
         community.postgresql.postgresql_pg_hba:
@@ -50,17 +58,26 @@
           create: true
         with_items:
           - "{{ postgresql_hba_list }}"
-        notify:
-          - RELOAD POSTGRESQL
       when: _backup_config.stat.exists
 
-  handlers:
+    - name: Reset Params
+      become_user: postgres
+      community.postgresql.postgresql_set:
+        name: "{{ item.name }}"
+        reset: true
+      loop: "{{ postgresql_system_params }}"
+      register: _reset 
+
+    - name: Set work mem parameter
+      become_user: postgres
+      community.postgresql.postgresql_set:
+        name: "{{ item.name }}"
+        value: "{{ item.value }}"
+      register: _set
+      loop: "{{ postgresql_system_params }}"
+      when: postgresql_custom_params|bool
+  
     - name: RESTART POSTGRESQL
       ansible.builtin.service:
         name: postgresql
         state: restarted
-
-    - name: RELOAD POSTGRESQL
-      ansible.builtin.service:
-        name: postgresql
-        state: reloaded
