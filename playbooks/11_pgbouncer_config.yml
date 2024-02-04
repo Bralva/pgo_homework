@@ -3,6 +3,21 @@
   become: true
   tasks:
 
+    - name: IMPORT POSTGRESQL REPO KEY
+      ansible.builtin.apt_key:
+        url: https://www.postgresql.org/media/keys/ACCC4CF8.asc
+        state: present
+
+    - name: ADD POSTGRESQL REPO
+      ansible.builtin.apt_repository:
+        repo: "deb http://apt.postgresql.org/pub/repos/apt {{ ansible_distribution_release }}-pgdg main"
+        state: present
+
+    - name: INSTALL PGBOUNCER PACKAGES
+      ansible.builtin.package:
+        name: pgbouncer
+        update_cache: true
+
     - name: Create individual directories for pgbouncers
       ansible.builtin.file:
         path: "/var/run/postgresql/{{ item }}_sock"
@@ -63,8 +78,6 @@
         state: restarted
         daemon_reload: true
       loop: "{{ pgbouncer_instances | default([]) }}"
-
-    
 
     - name: Collect service facts
       ansible.builtin.service_facts:

@@ -1,0 +1,143 @@
+- name: odyssey install and config #https://github.com/yandex/odyssey/blob/master/documentation/configuration.md
+  hosts: all
+  gather_facts: true
+  become: true
+  vars:
+    odyssey_dependencies:
+     - build-essential
+     - cmake 
+     - "postgresql-server-dev-{{ postgresql_version }}"
+     - gcc
+     - openssl
+     - git
+     - libpam0g-dev
+     - clang
+     - gdb
+     - valgrind
+     - libpq5
+     - libpq-dev
+     - vim
+     - postgresql-common
+
+  tasks:
+  
+    - name: IMPORT POSTGRESQL REPO KEY
+      ansible.builtin.apt_key:
+        url: https://www.postgresql.org/media/keys/ACCC4CF8.asc
+        state: present
+
+    - name: ADD POSTGRESQL REPO
+      ansible.builtin.apt_repository:
+        repo: "deb http://apt.postgresql.org/pub/repos/apt {{ ansible_distribution_release }}-pgdg main"
+        state: present
+
+    - name: INSTALL DEPENDENCIES
+      ansible.builtin.package:
+        name: "{{ item }}"
+        update_cache: true
+      loop: "{{ odyssey_dependencies }}"
+
+    - name: Clone odyssey repo
+      ansible.builtin.git:
+        repo: https://github.com/yandex/odyssey.git
+        dest: /root/odyssey
+
+    - name: Get stats of the FS object
+      ansible.builtin.stat:
+        path: /root/odyssey/build/sources/odyssey
+      register: _odyssey_bin_file
+      tags:
+       - odyssey_build
+
+    - name: Build odyssey from source
+      ansible.builtin.shell: "make local_build"
+      args:
+        chdir: /root/odyssey
+      tags:
+       - odyssey_build
+      when: not _odyssey_bin_file.stat.exists
+
+    - name: Create config directory for odyssey
+      ansible.builtin.file:
+        path: "/etc/odyssey/"
+        state: directory
+        recurse: yes
+        owner: postgres
+        group: postgres
+        mode: '0755'
+
+    - name: Get stats of the FS object
+      ansible.builtin.stat:
+        path: /usr/local/bin/odyssey
+      register: _odyssey_bin_file_dest
+
+    - name: Install odyssey to /usr/local/bin
+      ansible.builtin.shell: "make install"
+      args:
+        chdir: /root/odyssey
+      when: not _odyssey_bin_file_dest.stat.exists
+
+
+    - name: result _pgshadow
+      become: true
+      become_user: postgres
+      changed_when: false
+      ansible.builtin.command: >
+          psql -p 5432 -U postgres -Atq
+          -c "SELECT passwd FROM pg_shadow where usename = 'postgres'"
+      register: _pgshadow
+      tags:
+         - odyssey_config
+
+    - name: show _pgshadow result
+      debug:
+        msg: |
+          {{ _pgshadow.stdout }}
+      changed_when: false
+      tags:
+         - odyssey_config
+
+    - name: "generate userlist"
+      become: true
+      ansible.builtin.set_fact:
+        _postgres_password_hash: "{{ _pgshadow.stdout }}"
+      changed_when: false
+      tags:
+         - odyssey_config
+
+    - name: Render config odyssey
+      ansible.builtin.template:
+        src: "{{ workload_files_dir }}/files/configs/odyssey.conf.j2"
+        dest: "/etc/odyssey/odyssey.conf"
+        owner: postgres
+        group: postgres
+        mode: u=rw,g=r,o=r
+      tags:
+         - odyssey_config
+
+    - name: Render systemd unit odyssey
+      ansible.builtin.template:
+        src: "{{ workload_files_dir }}/files/configs/odyssey.service.j2"
+        dest: "/lib/systemd/system/odyssey.service"
+        owner: postgres
+        group: postgres
+        mode: u=rw,g=r,o=r
+      tags:
+         - odyssey_config
+
+    - name: odyssey restarted
+      ansible.builtin.service:
+        name: odyssey
+        state: restarted
+        daemon_reload: true
+      tags:
+         - odyssey_config
+
+    - name: check service started
+      ansible.builtin.wait_for:
+        port: "{{ odyssey_listen_port }}"
+        state: started
+        delay: 3
+        timeout: 5
+      tags:
+         - odyssey_config

@@ -1,0 +1,22 @@
+odyssey_dependencies:
+  - build-essential
+  - cmake 
+  - "postgresql-server-dev-{{ postgresql_version }}"
+  - gcc
+  - openssl
+  - git
+  - libpam0g-dev
+  - clang
+  - gdb
+  - valgrind
+  - libpq5
+  - libpq-dev
+  - vim
+  - postgresql-common
+
+
+odyssey_pool_mode: session
+odyssey_client_max: 100
+odyssey_listen_port: 6433
+
+#odyssey_default_password: 

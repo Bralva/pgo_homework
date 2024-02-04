@@ -70,3 +70,12 @@
 
     - name: INIT PGBENCH TABLES
       shell: pgbench -i postgres
+
+    - name: VACUUM FULL ANALYZE ALL DBS
+      shell: |
+        vacuumdb -a -f -z -v
+      args:
+        chdir: /var/lib/postgresql/
+      when: pgbench_vacuumfull|bool
+      tags:
+        - pgbench_vacuumfull
